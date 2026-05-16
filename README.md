@@ -42,9 +42,9 @@ lib/
 │   ├── film_list_view.dart            # Daftar film (grid/list)
 │   ├── film_detail_view.dart          # Detail film
 │   ├── film_form_view.dart            # Form tambah/edit (3-step)
-│   └── profile_view.dart             # Halaman profil user
+│   └── profile_view.dart              # Halaman profil user
 └── theme/
-    └── app_theme.dart                 # Tema hitam-kuning premium
+    └── app_theme.dart                 # Tema ungu-hitam modern minimalis
 ```
 
 ---
@@ -129,15 +129,26 @@ CREATE POLICY "Enable insert for signup" ON profiles
 
 ---
 
-## 🎨 Tema — Hitam & Kuning Premium
+## 🎨 Tema — Ungu & Hitam Modern Minimalis
 
-| Elemen | Warna | Kode |
-|--------|-------|------|
-| Primary Gold | 🟡 | `#FFD700` |
-| Background | ⬛ | `#0A0A0A` |
-| Surface | ⬛ | `#141414` |
-| Card | ⬛ | `#1C1C1E` |
-| Text | ⬜ | `#F5F5F5` |
+Tema dirombak total dari hitam-kuning menjadi **ungu-hitam modern minimalis** untuk tampilan yang lebih premium dan kontemporer.
+
+| Elemen | Warna | Kode Hex |
+|--------|-------|----------|
+| Primary Purple | 🟣 | `#9B59FF` |
+| Primary Dark | 🟣 | `#7B3FE4` |
+| Accent Lavender | 🔵 | `#D4AAFF` |
+| Background | ⬛ | `#08080D` |
+| Surface | ⬛ | `#10101A` |
+| Card | ⬛ | `#18182A` |
+| Text White | ⬜ | `#F0EEFF` |
+| Text Grey | 🔘 | `#9494B0` |
+
+### Perubahan UI (v2.0)
+- **Palet warna** diganti dari gold/amber → vivid purple/lavender
+- **Gradient** `purpleGradient` menggantikan `goldGradient` di seluruh komponen
+- **Rating badge**, **FAB**, **step indicator**, **avatar** — semua pakai purple gradient
+- **Kode dioptimalkan** ±30% lebih ringkas di setiap view, mempertahankan seluruh fitur
 
 ---
 
@@ -193,3 +204,4 @@ CREATE POLICY "Enable insert for signup" ON profiles
 - **Auth & DB:** Supabase
 - **State Management:** Provider
 - **Arsitektur:** MVC
+- **Tema:** Ungu-Hitam Modern Minimalis

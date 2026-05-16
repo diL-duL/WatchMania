@@ -24,20 +24,11 @@ class _ProfileViewState extends State<ProfileView> {
           controller: nameCtrl,
           autofocus: true,
           style: const TextStyle(color: AppTheme.textWhite),
-          decoration: const InputDecoration(
-            labelText: 'Nama Lengkap',
-            prefixIcon: Icon(Icons.person_outline_rounded),
-          ),
+          decoration: const InputDecoration(labelText: 'Nama Lengkap', prefixIcon: Icon(Icons.person_outline_rounded)),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal', style: TextStyle(color: AppTheme.textGrey)),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, nameCtrl.text),
-            child: const Text('Simpan'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal', style: TextStyle(color: AppTheme.textGrey))),
+          ElevatedButton(onPressed: () => Navigator.pop(ctx, nameCtrl.text), child: const Text('Simpan')),
         ],
       ),
     );
@@ -45,12 +36,10 @@ class _ProfileViewState extends State<ProfileView> {
     if (newName != null && newName.trim().isNotEmpty && mounted) {
       final success = await auth.updateName(newName);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success ? 'Nama berhasil diupdate!' : 'Gagal mengupdate nama'),
-            backgroundColor: success ? AppTheme.successGreen : AppTheme.errorRed,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(success ? 'Nama berhasil diupdate!' : 'Gagal mengupdate nama'),
+          backgroundColor: success ? AppTheme.successGreen : AppTheme.errorRed,
+        ));
       }
     }
     nameCtrl.dispose();
@@ -63,15 +52,8 @@ class _ProfileViewState extends State<ProfileView> {
         title: const Text('Logout'),
         content: const Text('Apakah Anda yakin ingin keluar?', style: TextStyle(color: AppTheme.textGrey)),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Batal', style: TextStyle(color: AppTheme.textGrey)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.errorRed, foregroundColor: Colors.white),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Keluar'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal', style: TextStyle(color: AppTheme.textGrey))),
+          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: AppTheme.errorRed), onPressed: () => Navigator.pop(ctx, true), child: const Text('Keluar')),
         ],
       ),
     );
@@ -79,11 +61,7 @@ class _ProfileViewState extends State<ProfileView> {
     if (confirmed == true && mounted) {
       await context.read<AuthController>().logout();
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginView()),
-          (route) => false,
-        );
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginView()), (r) => false);
       }
     }
   }
@@ -93,7 +71,7 @@ class _ProfileViewState extends State<ProfileView> {
     return Scaffold(
       appBar: AppBar(title: const Text('Profil')),
       body: Consumer<AuthController>(
-        builder: (context, auth, _) {
+        builder: (context2, auth, child) {
           final user = auth.currentUser;
           if (user == null) return const SizedBox.shrink();
 
@@ -105,82 +83,54 @@ class _ProfileViewState extends State<ProfileView> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const SizedBox(height: 20),
-
-                // ── Avatar ──
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.goldGradient,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(color: AppTheme.primaryGold.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 2),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      initials,
-                      style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w800, color: AppTheme.backgroundBlack),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 16),
 
-                // ── Name ──
+                // Avatar
+                Container(
+                  width: 96, height: 96,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.purpleGradient,
+                    shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(color: AppTheme.primary.withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 2)],
+                  ),
+                  child: Center(child: Text(initials, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white))),
+                ),
+                const SizedBox(height: 14),
+
                 Text(user.nama, style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 4),
                 Text(user.email, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 12),
 
-                // ── Role Badge ──
+                // Role Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
                   decoration: BoxDecoration(
-                    gradient: user.isAdmin ? AppTheme.goldGradient : null,
-                    color: user.isAdmin ? null : AppTheme.cardDark,
+                    gradient: user.isAdmin ? AppTheme.purpleGradient : null,
+                    color: user.isAdmin ? null : AppTheme.card,
                     borderRadius: BorderRadius.circular(30),
-                    border: user.isAdmin ? null : Border.all(color: AppTheme.dividerColor),
+                    border: user.isAdmin ? null : Border.all(color: AppTheme.divider),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        user.isAdmin ? Icons.admin_panel_settings_rounded : Icons.person_rounded,
-                        size: 18,
-                        color: user.isAdmin ? AppTheme.backgroundBlack : AppTheme.textGrey,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        user.isAdmin ? 'Admin' : 'User',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: user.isAdmin ? AppTheme.backgroundBlack : AppTheme.textGrey,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(user.isAdmin ? Icons.admin_panel_settings_rounded : Icons.person_rounded, size: 16, color: user.isAdmin ? Colors.white : AppTheme.textGrey),
+                    const SizedBox(width: 6),
+                    Text(user.isAdmin ? 'Admin' : 'User', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: user.isAdmin ? Colors.white : AppTheme.textGrey)),
+                  ]),
                 ),
-                const SizedBox(height: 36),
+                const SizedBox(height: 32),
 
-                // ── Info Cards ──
-                _buildInfoTile(Icons.person_outline_rounded, 'Nama', user.nama, onEdit: _editName),
-                _buildInfoTile(Icons.email_outlined, 'Email', user.email),
-                _buildInfoTile(Icons.shield_outlined, 'Role', user.isAdmin ? 'Administrator' : 'User'),
+                // Info Cards
+                _infoTile(Icons.person_outline_rounded, 'Nama', user.nama, onEdit: _editName),
+                _infoTile(Icons.email_outlined, 'Email', user.email),
+                _infoTile(Icons.shield_outlined, 'Role', user.isAdmin ? 'Administrator' : 'User'),
                 if (user.createdAt != null)
-                  _buildInfoTile(
-                    Icons.calendar_today_rounded,
-                    'Bergabung',
-                    '${user.createdAt!.day}/${user.createdAt!.month}/${user.createdAt!.year}',
-                  ),
+                  _infoTile(Icons.calendar_today_rounded, 'Bergabung', '${user.createdAt!.day}/${user.createdAt!.month}/${user.createdAt!.year}'),
 
-                const SizedBox(height: 36),
+                const SizedBox(height: 32),
 
-                // ── Logout ──
+                // Logout
                 SizedBox(
-                  width: double.infinity,
-                  height: 54,
+                  width: double.infinity, height: 52,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.errorRed,
@@ -189,7 +139,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     onPressed: _handleLogout,
                     icon: const Icon(Icons.logout_rounded),
-                    label: const Text('Keluar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    label: const Text('Keluar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -201,44 +151,26 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildInfoTile(IconData icon, String label, String value, {VoidCallback? onEdit}) {
+  Widget _infoTile(IconData icon, String label, String value, {VoidCallback? onEdit}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.dividerColor),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryGold.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: AppTheme.primaryGold, size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: const TextStyle(color: AppTheme.textDarkGrey, fontSize: 12)),
-                const SizedBox(height: 2),
-                Text(value, style: const TextStyle(color: AppTheme.textWhite, fontSize: 15, fontWeight: FontWeight.w500)),
-              ],
-            ),
-          ),
-          if (onEdit != null)
-            IconButton(
-              icon: const Icon(Icons.edit_outlined, color: AppTheme.primaryGold, size: 20),
-              onPressed: onEdit,
-            ),
-        ],
-      ),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.divider)),
+      child: Row(children: [
+        Container(
+          width: 40, height: 40,
+          decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(11)),
+          child: Icon(icon, color: AppTheme.primary, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(label, style: const TextStyle(color: AppTheme.textDim, fontSize: 12)),
+          const SizedBox(height: 2),
+          Text(value, style: const TextStyle(color: AppTheme.textWhite, fontSize: 14, fontWeight: FontWeight.w500)),
+        ])),
+        if (onEdit != null)
+          IconButton(icon: const Icon(Icons.edit_outlined, color: AppTheme.primary, size: 18), onPressed: onEdit),
+      ]),
     );
   }
 }

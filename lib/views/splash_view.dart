@@ -13,52 +13,35 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
-  late AnimationController _logoController;
-  late AnimationController _textController;
+  late AnimationController _logoCtrl;
+  late AnimationController _textCtrl;
   late Animation<double> _logoScale;
   late Animation<double> _textOpacity;
 
   @override
   void initState() {
     super.initState();
-
-    _logoController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _textController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
-    _logoScale = CurvedAnimation(parent: _logoController, curve: Curves.elasticOut);
-    _textOpacity = CurvedAnimation(parent: _textController, curve: Curves.easeIn);
-
-    _logoController.forward();
+    _logoCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+    _textCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _logoScale = CurvedAnimation(parent: _logoCtrl, curve: Curves.elasticOut);
+    _textOpacity = CurvedAnimation(parent: _textCtrl, curve: Curves.easeIn);
+    _logoCtrl.forward();
     Future.delayed(const Duration(milliseconds: 600), () {
-      if (mounted) _textController.forward();
+      if (mounted) _textCtrl.forward();
     });
-
     _checkAuth();
   }
 
   Future<void> _checkAuth() async {
     await Future.delayed(const Duration(milliseconds: 2200));
     if (!mounted) return;
-
-    final authController = context.read<AuthController>();
-    final hasSession = await authController.checkSession();
-
+    final hasSession = await context.read<AuthController>().checkSession();
     if (!mounted) return;
-
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (_, a, b) =>
-            hasSession ? const FilmListView() : const LoginView(),
-        transitionsBuilder: (_, animation, a, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+        pageBuilder: (_, a, b) => hasSession ? const FilmListView() : const LoginView(),
+        transitionsBuilder: (_, animation, a, child) => FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 500),
       ),
     );
@@ -66,8 +49,8 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _logoController.dispose();
-    _textController.dispose();
+    _logoCtrl.dispose();
+    _textCtrl.dispose();
     super.dispose();
   }
 
@@ -75,7 +58,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.darkGradient),
+        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -83,24 +66,16 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
               ScaleTransition(
                 scale: _logoScale,
                 child: Container(
-                  width: 100,
-                  height: 100,
+                  width: 96,
+                  height: 96,
                   decoration: BoxDecoration(
-                    gradient: AppTheme.goldGradient,
+                    gradient: AppTheme.purpleGradient,
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryGold.withValues(alpha: 0.3),
-                        blurRadius: 30,
-                        spreadRadius: 5,
-                      ),
+                      BoxShadow(color: AppTheme.primary.withValues(alpha: 0.4), blurRadius: 32, spreadRadius: 4),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.movie_filter_rounded,
-                    size: 50,
-                    color: AppTheme.backgroundBlack,
-                  ),
+                  child: const Icon(Icons.movie_filter_rounded, size: 48, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 24),
@@ -111,29 +86,23 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                     Text(
                       'FILMKU',
                       style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: AppTheme.primaryGold,
+                        color: AppTheme.textWhite,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 4,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Kelola Koleksi Film Anda',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    const SizedBox(height: 6),
+                    Text('Kelola Koleksi Film Anda', style: Theme.of(context).textTheme.bodyMedium),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppTheme.primary.withValues(alpha: 0.7),
+                      ),
                     ),
                   ],
-                ),
-              ),
-              const SizedBox(height: 48),
-              FadeTransition(
-                opacity: _textOpacity,
-                child: SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: AppTheme.primaryGold.withValues(alpha: 0.6),
-                  ),
                 ),
               ),
             ],

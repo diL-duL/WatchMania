@@ -17,44 +17,35 @@ class _RegisterViewState extends State<RegisterView> with SingleTickerProviderSt
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
-  bool _obscurePassword = true;
+  bool _obscurePass = true;
   bool _obscureConfirm = true;
-  late AnimationController _animController;
-  late Animation<double> _fadeAnim;
-  late Animation<Offset> _slideAnim;
+  late AnimationController _animCtrl;
+  late Animation<double> _fade;
+  late Animation<Offset> _slide;
 
   @override
   void initState() {
     super.initState();
-    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
-    _slideAnim = Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic));
-    _animController.forward();
+    _animCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
+    _fade = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
+    _slide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutCubic));
+    _animCtrl.forward();
   }
 
   @override
   void dispose() {
-    _namaCtrl.dispose();
-    _emailCtrl.dispose();
-    _passwordCtrl.dispose();
-    _confirmCtrl.dispose();
-    _animController.dispose();
+    _namaCtrl.dispose(); _emailCtrl.dispose();
+    _passwordCtrl.dispose(); _confirmCtrl.dispose();
+    _animCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
-
-    final auth = context.read<AuthController>();
-    final success = await auth.register(_namaCtrl.text, _emailCtrl.text, _passwordCtrl.text);
-
+    final success = await context.read<AuthController>().register(_namaCtrl.text, _emailCtrl.text, _passwordCtrl.text);
     if (mounted && success) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const FilmListView()),
-        (route) => false,
-      );
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const FilmListView()), (r) => false);
     }
   }
 
@@ -62,86 +53,73 @@ class _RegisterViewState extends State<RegisterView> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.darkGradient),
+        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: FadeTransition(
-                opacity: _fadeAnim,
+                opacity: _fade,
                 child: SlideTransition(
-                  position: _slideAnim,
+                  position: _slide,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ── Header ──
                       Container(
-                        width: 70,
-                        height: 70,
+                        width: 70, height: 70,
                         decoration: BoxDecoration(
-                          gradient: AppTheme.goldGradient,
+                          gradient: AppTheme.purpleGradient,
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(color: AppTheme.primaryGold.withValues(alpha: 0.25), blurRadius: 20, spreadRadius: 2),
-                          ],
+                          boxShadow: [BoxShadow(color: AppTheme.primary.withValues(alpha: 0.3), blurRadius: 24, spreadRadius: 2)],
                         ),
-                        child: const Icon(Icons.person_add_rounded, size: 34, color: AppTheme.backgroundBlack),
+                        child: const Icon(Icons.person_add_rounded, size: 34, color: Colors.white),
                       ),
-                      const SizedBox(height: 16),
-                      Text('Buat Akun', style: Theme.of(context).textTheme.displayMedium?.copyWith(color: AppTheme.primaryGold, fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 14),
+                      Text('Buat Akun', style: Theme.of(context).textTheme.displayMedium?.copyWith(color: AppTheme.textWhite, fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 4),
                       Text('Daftar untuk mulai menjelajah film', style: Theme.of(context).textTheme.bodyMedium),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 28),
 
-                      // ── Form Card ──
                       Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceDark,
+                          color: AppTheme.card,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: AppTheme.dividerColor),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
+                          border: Border.all(color: AppTheme.divider),
+                          boxShadow: [BoxShadow(color: AppTheme.primary.withValues(alpha: 0.06), blurRadius: 24, offset: const Offset(0, 8))],
                         ),
                         child: Form(
                           key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              // Error
                               Consumer<AuthController>(
-                                builder: (context, auth, _) {
-                                  if (auth.errorMessage != null) {
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 16),
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.errorRed.withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: AppTheme.errorRed.withValues(alpha: 0.3)),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(Icons.error_outline, color: AppTheme.errorRed, size: 20),
-                                          const SizedBox(width: 10),
-                                          Expanded(child: Text(auth.errorMessage!, style: const TextStyle(color: AppTheme.errorRed, fontSize: 13))),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
+                                builder: (context2, auth, child) {
+                                  if (auth.errorMessage == null) return const SizedBox.shrink();
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.errorRed.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: AppTheme.errorRed.withValues(alpha: 0.3)),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.error_outline, color: AppTheme.errorRed, size: 18),
+                                        const SizedBox(width: 10),
+                                        Expanded(child: Text(auth.errorMessage!, style: const TextStyle(color: AppTheme.errorRed, fontSize: 13))),
+                                      ],
+                                    ),
+                                  );
                                 },
                               ),
-
-                              // Nama
                               TextFormField(
                                 controller: _namaCtrl,
                                 style: const TextStyle(color: AppTheme.textWhite),
                                 decoration: const InputDecoration(labelText: 'Nama Lengkap', hintText: 'John Doe', prefixIcon: Icon(Icons.person_outline_rounded)),
                                 validator: (v) => v == null || v.trim().isEmpty ? 'Nama wajib diisi' : null,
                               ),
-                              const SizedBox(height: 16),
-
-                              // Email
+                              const SizedBox(height: 14),
                               TextFormField(
                                 controller: _emailCtrl,
                                 keyboardType: TextInputType.emailAddress,
@@ -153,20 +131,17 @@ class _RegisterViewState extends State<RegisterView> with SingleTickerProviderSt
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
-
-                              // Password
+                              const SizedBox(height: 14),
                               TextFormField(
                                 controller: _passwordCtrl,
-                                obscureText: _obscurePassword,
+                                obscureText: _obscurePass,
                                 style: const TextStyle(color: AppTheme.textWhite),
                                 decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  hintText: '••••••••',
+                                  labelText: 'Password', hintText: '••••••••',
                                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                                   suffixIcon: IconButton(
-                                    icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.textDarkGrey),
-                                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                    icon: Icon(_obscurePass ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.textDim),
+                                    onPressed: () => setState(() => _obscurePass = !_obscurePass),
                                   ),
                                 ),
                                 validator: (v) {
@@ -175,19 +150,16 @@ class _RegisterViewState extends State<RegisterView> with SingleTickerProviderSt
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
-
-                              // Confirm Password
+                              const SizedBox(height: 14),
                               TextFormField(
                                 controller: _confirmCtrl,
                                 obscureText: _obscureConfirm,
                                 style: const TextStyle(color: AppTheme.textWhite),
                                 decoration: InputDecoration(
-                                  labelText: 'Konfirmasi Password',
-                                  hintText: '••••••••',
+                                  labelText: 'Konfirmasi Password', hintText: '••••••••',
                                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                                   suffixIcon: IconButton(
-                                    icon: Icon(_obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.textDarkGrey),
+                                    icon: Icon(_obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.textDim),
                                     onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                                   ),
                                 ),
@@ -197,29 +169,23 @@ class _RegisterViewState extends State<RegisterView> with SingleTickerProviderSt
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 28),
-
-                              // Register Button
+                              const SizedBox(height: 24),
                               Consumer<AuthController>(
-                                builder: (context, auth, _) {
-                                  return SizedBox(
-                                    height: 54,
-                                    child: ElevatedButton(
-                                      onPressed: auth.isLoading ? null : _handleRegister,
-                                      child: auth.isLoading
-                                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppTheme.backgroundBlack))
-                                          : const Text('Daftar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                                    ),
-                                  );
-                                },
+                                builder: (context2, auth, child) => SizedBox(
+                                  height: 52,
+                                  child: ElevatedButton(
+                                    onPressed: auth.isLoading ? null : _handleRegister,
+                                    child: auth.isLoading
+                                        ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                                        : const Text('Daftar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // ── Login link ──
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -229,7 +195,7 @@ class _RegisterViewState extends State<RegisterView> with SingleTickerProviderSt
                               context.read<AuthController>().clearError();
                               Navigator.pop(context);
                             },
-                            child: const Text('Masuk', style: TextStyle(color: AppTheme.primaryGold, fontSize: 14, fontWeight: FontWeight.w700)),
+                            child: const Text('Masuk', style: TextStyle(color: AppTheme.primary, fontSize: 14, fontWeight: FontWeight.w700)),
                           ),
                         ],
                       ),
