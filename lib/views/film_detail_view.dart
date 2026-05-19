@@ -67,11 +67,9 @@ class FilmDetailView extends StatelessWidget {
 
           // Content
           SliverToBoxAdapter(
-            child: Transform.translate(
-              offset: const Offset(0, -36),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Poster + Info
@@ -263,7 +261,6 @@ class FilmDetailView extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
           ),
         ],
       ),

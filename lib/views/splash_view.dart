@@ -21,8 +21,14 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _logoCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
-    _textCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _logoCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _textCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     _logoScale = CurvedAnimation(parent: _logoCtrl, curve: Curves.elasticOut);
     _textOpacity = CurvedAnimation(parent: _textCtrl, curve: Curves.easeIn);
     _logoCtrl.forward();
@@ -40,8 +46,10 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (_, a, b) => hasSession ? const FilmListView() : const LoginView(),
-        transitionsBuilder: (_, animation, a, child) => FadeTransition(opacity: animation, child: child),
+        pageBuilder: (_, a, b) =>
+            hasSession ? const FilmListView() : const LoginView(),
+        transitionsBuilder: (_, animation, a, child) =>
+            FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 500),
       ),
     );
@@ -72,10 +80,18 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                     gradient: AppTheme.purpleGradient,
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
-                      BoxShadow(color: AppTheme.primary.withValues(alpha: 0.4), blurRadius: 32, spreadRadius: 4),
+                      BoxShadow(
+                        color: AppTheme.primary.withValues(alpha: 0.4),
+                        blurRadius: 32,
+                        spreadRadius: 4,
+                      ),
                     ],
                   ),
-                  child: const Icon(Icons.movie_filter_rounded, size: 48, color: Colors.white),
+                  child: const Icon(
+                    Icons.movie_filter_rounded,
+                    size: 48,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -84,15 +100,19 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     Text(
-                      'FILMKU',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: AppTheme.textWhite,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 4,
-                      ),
+                      'WatchMania',
+                      style: Theme.of(context).textTheme.displayMedium
+                          ?.copyWith(
+                            color: AppTheme.textWhite,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 4,
+                          ),
                     ),
                     const SizedBox(height: 6),
-                    Text('Kelola Koleksi Film Anda', style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      'Kelola Koleksi Film Anda',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     const SizedBox(height: 40),
                     SizedBox(
                       width: 28,
